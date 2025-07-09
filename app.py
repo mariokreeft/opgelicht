@@ -34,13 +34,21 @@ class AlertScraper:
         """Setup Chrome driver with headless options"""
         if self.driver is None:
             chrome_options = Options()
-            chrome_options.add_argument('--headless')
+            chrome_options.add_argument('--headless=new')
             chrome_options.add_argument('--no-sandbox')
             chrome_options.add_argument('--disable-dev-shm-usage')
             chrome_options.add_argument('--disable-gpu')
             chrome_options.add_argument('--disable-extensions')
             chrome_options.add_argument('--disable-plugins')
             chrome_options.add_argument('--disable-images')
+            chrome_options.add_argument('--disable-background-timer-throttling')
+            chrome_options.add_argument('--disable-backgrounding-occluded-windows')
+            chrome_options.add_argument('--disable-renderer-backgrounding')
+            chrome_options.add_argument('--disable-features=TranslateUI')
+            chrome_options.add_argument('--disable-ipc-flooding-protection')
+            chrome_options.add_argument('--memory-pressure-off')
+            chrome_options.add_argument('--max_old_space_size=4096')
+            chrome_options.add_argument('--single-process')
             chrome_options.add_argument('--remote-debugging-port=9222')
             chrome_options.add_argument('--user-agent=Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36')
             
@@ -81,8 +89,20 @@ class AlertScraper:
                         service = Service(ChromeDriverManager().install())
                         self.driver = webdriver.Chrome(service=service, options=chrome_options)
                         logger.info("Chrome driver setup successful (webdriver-manager)")
+                        
+                # Test if driver is responsive
+                self.driver.set_page_load_timeout(30)
+                self.driver.implicitly_wait(10)
+                
             except Exception as e:
                 logger.error(f"Failed to setup Chrome driver: {e}")
+                # Clean up any partial driver instance
+                if hasattr(self, 'driver') and self.driver:
+                    try:
+                        self.driver.quit()
+                    except:
+                        pass
+                    self.driver = None
                 return False
         return True
     
@@ -112,28 +132,23 @@ class AlertScraper:
                     EC.presence_of_element_located((By.TAG_NAME, "body"))
                 )
                 
-                # Wait a bit more for lazy loading
-                time.sleep(3)
+                # Reduced timing for Heroku memory constraints
+                time.sleep(2)
                 
                 # Scroll down to trigger lazy loading
                 self.driver.execute_script("window.scrollTo(0, document.body.scrollHeight);")
-                time.sleep(2)
-                
-                # Scroll back up and wait for images to load
-                self.driver.execute_script("window.scrollTo(0, 0);")
-                time.sleep(2)
+                time.sleep(1)
                 
                 # Try to trigger image loading by scrolling through all images
                 self.driver.execute_script("""
                     var images = document.querySelectorAll('img[data-src]');
                     images.forEach(function(img) {
-                        img.scrollIntoView({behavior: 'smooth', block: 'center'});
                         if (img.dataset.src) {
                             img.src = img.dataset.src;
                         }
                     });
                 """)
-                time.sleep(3)
+                time.sleep(2)
                 
                 # Get page source after JavaScript execution
                 page_source = self.driver.page_source
