@@ -1,0 +1,18 @@
+{
+  "name": "AVROTROS Opgelicht Alerts",
+  "description": "Web scraper for AVROTROS Opgelicht alerts with real images",
+  "repository": "https://github.com/mariokreeft/opgelicht",
+  "logo": "https://node-js-sample.herokuapp.com/node.png",
+  "keywords": ["python", "flask", "selenium", "web-scraping"],
+  "buildpacks": [
+    {
+      "url": "https://github.com/heroku/heroku-buildpack-chromedriver"
+    },
+    {
+      "url": "https://github.com/heroku/heroku-buildpack-google-chrome"
+    },
+    {
+      "url": "heroku/python"
+    }
+  ]
+}
