@@ -45,19 +45,38 @@ class AlertScraper:
             chrome_options.add_argument('--user-agent=Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36')
             
             # Try to use system chrome first (for Railway/production)
-            chrome_options.binary_location = '/usr/bin/chromium'
+            import os
+            chrome_bin = os.environ.get('CHROME_BIN')
+            chromedriver_path = os.environ.get('CHROMEDRIVER_PATH')
+            
+            if chrome_bin:
+                chrome_options.binary_location = chrome_bin
+            else:
+                # Try common locations
+                for location in ['/usr/bin/chromium', '/usr/bin/google-chrome', '/usr/bin/chromium-browser']:
+                    if os.path.exists(location):
+                        chrome_options.binary_location = location
+                        break
             
             try:
                 # Try system chrome first
-                try:
-                    service = Service('/usr/bin/chromedriver')
+                if chromedriver_path and os.path.exists(chromedriver_path):
+                    service = Service(chromedriver_path)
                     self.driver = webdriver.Chrome(service=service, options=chrome_options)
-                    logger.info("Chrome driver setup successful (system)")
-                except:
-                    # Fallback to webdriver-manager
-                    service = Service(ChromeDriverManager().install())
-                    self.driver = webdriver.Chrome(service=service, options=chrome_options)
-                    logger.info("Chrome driver setup successful (webdriver-manager)")
+                    logger.info("Chrome driver setup successful (nixpkgs)")
+                else:
+                    # Try common chromedriver locations
+                    for driver_path in ['/usr/bin/chromedriver', '/usr/local/bin/chromedriver']:
+                        if os.path.exists(driver_path):
+                            service = Service(driver_path)
+                            self.driver = webdriver.Chrome(service=service, options=chrome_options)
+                            logger.info("Chrome driver setup successful (system)")
+                            break
+                    else:
+                        # Fallback to webdriver-manager
+                        service = Service(ChromeDriverManager().install())
+                        self.driver = webdriver.Chrome(service=service, options=chrome_options)
+                        logger.info("Chrome driver setup successful (webdriver-manager)")
             except Exception as e:
                 logger.error(f"Failed to setup Chrome driver: {e}")
                 return False
