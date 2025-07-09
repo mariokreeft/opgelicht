@@ -59,6 +59,9 @@ class AlertScraper:
             chrome_bin = os.environ.get('GOOGLE_CHROME_BIN')
             chromedriver_path = os.environ.get('CHROMEDRIVER_PATH')
             
+            # Debug: Log all Chrome-related environment variables
+            logger.info(f"Environment variables: GOOGLE_CHROME_BIN={chrome_bin}, CHROMEDRIVER_PATH={chromedriver_path}")
+            
             # Force use of buildpack Chrome
             if chrome_bin:
                 chrome_options.binary_location = chrome_bin
@@ -78,32 +81,35 @@ class AlertScraper:
                             break
             
             try:
-                # Try Heroku chrome-for-testing buildpack first
-                if chromedriver_path and os.path.exists(chromedriver_path):
-                    service = Service(chromedriver_path)
-                    self.driver = webdriver.Chrome(service=service, options=chrome_options)
-                    logger.info(f"Chrome driver setup successful (Heroku buildpack): {chromedriver_path}")
-                else:
-                    # Try known buildpack chromedriver location
-                    buildpack_driver = '/app/.chrome-for-testing/chromedriver-linux64/chromedriver'
-                    if os.path.exists(buildpack_driver):
-                        service = Service(buildpack_driver)
-                        self.driver = webdriver.Chrome(service=service, options=chrome_options)
-                        logger.info(f"Chrome driver setup successful (buildpack location): {buildpack_driver}")
-                    else:
-                        # Try common chromedriver locations
-                        for driver_path in ['/usr/bin/chromedriver', '/usr/local/bin/chromedriver']:
-                            if os.path.exists(driver_path):
-                                service = Service(driver_path)
-                                self.driver = webdriver.Chrome(service=service, options=chrome_options)
-                                logger.info(f"Chrome driver setup successful (system): {driver_path}")
-                                break
-                        else:
-                            # Last resort: webdriver-manager but this causes version mismatch
-                            logger.warning("Using webdriver-manager may cause version mismatch")
-                            service = Service(ChromeDriverManager().install())
+                # Force use of buildpack ChromeDriver - try all possible locations
+                possible_drivers = [
+                    chromedriver_path,  # Environment variable
+                    '/app/.chrome-for-testing/chromedriver-linux64/chromedriver',  # Known buildpack location
+                    '/app/.chrome-for-testing/chromedriver',  # Alternative location
+                    '/usr/local/bin/chromedriver',  # System location
+                    '/usr/bin/chromedriver'  # System location
+                ]
+                
+                driver_found = False
+                for driver_path in possible_drivers:
+                    if driver_path and os.path.exists(driver_path):
+                        logger.info(f"Trying ChromeDriver at: {driver_path}")
+                        try:
+                            service = Service(driver_path)
                             self.driver = webdriver.Chrome(service=service, options=chrome_options)
-                            logger.info("Chrome driver setup successful (webdriver-manager)")
+                            logger.info(f"Chrome driver setup successful: {driver_path}")
+                            driver_found = True
+                            break
+                        except Exception as e:
+                            logger.warning(f"Failed to use ChromeDriver at {driver_path}: {e}")
+                            continue
+                
+                if not driver_found:
+                    # Only use webdriver-manager if no buildpack driver found
+                    logger.error("No matching ChromeDriver found, falling back to webdriver-manager (may cause version mismatch)")
+                    service = Service(ChromeDriverManager().install())
+                    self.driver = webdriver.Chrome(service=service, options=chrome_options)
+                    logger.info("Chrome driver setup successful (webdriver-manager)")
                         
                 # Test if driver is responsive
                 self.driver.set_page_load_timeout(30)
