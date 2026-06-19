@@ -1,1 +1,761 @@
-<!DOCTYPE html><html lang='nl'><head><meta charset='utf-8'><meta name='viewport' content='width=device-width,initial-scale=1'><title>Fraude Radar Nederland</title><style>body{font-family:Segoe UI,sans-serif;background:#f3f6fb;color:#243447;margin:0}header{background:white;padding:24px;box-shadow:0 2px 10px rgba(0,0,0,.05)}main{max-width:1200px;margin:auto;padding:20px}.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:12px}.tile,.card{background:#fff;border-radius:16px;box-shadow:0 2px 8px rgba(0,0,0,.06)}.tile{padding:20px;text-align:center}.num{font-size:2rem;color:#0f6cbd;font-weight:bold}input{width:100%;padding:14px;border-radius:12px;border:1px solid #d0d7de;margin:20px 0}.cards{display:grid;gap:14px}.card{padding:18px}.high{background:#fde7e9}.medium{background:#fff4ce}.low{background:#dff6dd}.badge{display:inline-block;padding:5px 10px;border-radius:999px;font-size:.8em}a{color:#0f6cbd}</style></head><body><header><h1>🛡️ Fraude Radar Nederland</h1><div id='updated'>Live Fraudehelpdesk waarschuwingen</div></header><main><div class='stats'><div class='tile'><div id='total' class='num'>-</div>Alerts</div><div class='tile'><div id='high' class='num'>-</div>Hoog risico</div><div class='tile'><div id='week' class='num'>-</div>Afgelopen 7 dagen</div></div><input id='q' placeholder='Zoek op PayPal, politie, sms, BSN...'><div id='cards' class='cards'></div></main><script>const FEED='https://api.rss2json.com/v1/api.json?rss_url='+encodeURIComponent('https://www.fraudehelpdesk.nl/feed/?post_type=alert');function risk(t){t=t.toLowerCase();if(/paypal|politie|europol|belasting|bsn|ideal|klarna/.test(t))return'high';if(/sms|visum|eta|beleggen/.test(t))return'medium';return'low'}async function load(){const d=await fetch(FEED).then(r=>r.json());window.items=d.items||[];document.getElementById('updated').innerText='Laatste update: '+new Date().toLocaleString('nl-NL');render()}function render(){const q=document.getElementById('q').value.toLowerCase();let items=(window.items||[]).filter(i=>(i.title+i.description).toLowerCase().includes(q));let hc=0,wc=0;const weekAgo=Date.now()-604800000;document.getElementById('total').innerText=items.length;items.forEach(i=>{if(risk(i.title+i.description)=='high')hc++;if(new Date(i.pubDate).getTime()>weekAgo)wc++;});document.getElementById('high').innerText=hc;document.getElementById('week').innerText=wc;document.getElementById('cards').innerHTML=items.map(i=>{let r=risk(i.title+i.description);let act=r=='high'?'Niet klikken, niet bellen, niet betalen.':r=='medium'?'Controleer de afzender zorgvuldig.':'Blijf alert.';return `<div class='card'><span class='badge ${r}'>${r.toUpperCase()}</span><h3>${i.title}</h3><p>${new Date(i.pubDate).toLocaleDateString('nl-NL')}</p><p>${(i.description||'').replace(/<[^>]+>/g,'').substring(0,250)}...</p><strong>Wat moet ik doen?</strong><p>${act}</p><a target='_blank' href='${i.link}'>Lees origineel bericht</a></div>`}).join('')}q.oninput=render;load();</script></body></html>
+<!DOCTYPE html>
+
+<html lang="nl">
+
+<head>
+
+<meta charset="UTF-8">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Fraude Radar Nederland</title>
+
+<meta name="theme-color" content="#0f6cbd">
+
+<style>
+
+:root{
+
+    --primary:#0f6cbd;
+
+    --primary-light:#deecf9;
+
+    --bg:#f5f7fb;
+
+    --card:#ffffff;
+
+    --text:#323130;
+
+    --muted:#605e5c;
+
+    --high:#d13438;
+
+    --medium:#ffb900;
+
+    --low:#107c10;
+
+}
+
+*{
+
+    box-sizing:border-box;
+
+}
+
+body{
+
+    margin:0;
+
+    font-family:'Segoe UI',sans-serif;
+
+    background:var(--bg);
+
+    color:var(--text);
+
+}
+
+header{
+
+    background:
+
+    linear-gradient(
+
+        135deg,
+
+        #0f6cbd,
+
+        #3b8eea
+
+    );
+
+    color:white;
+
+    padding:32px;
+
+}
+
+header h1{
+
+    margin:0;
+
+}
+
+header p{
+
+    margin-top:8px;
+
+    opacity:.9;
+
+}
+
+.container{
+
+    max-width:1300px;
+
+    margin:auto;
+
+    padding:24px;
+
+}
+
+.stats{
+
+    display:grid;
+
+    grid-template-columns:
+
+    repeat(auto-fit,minmax(220px,1fr));
+
+    gap:16px;
+
+    margin-bottom:25px;
+
+}
+
+.stat{
+
+    background:white;
+
+    border-radius:18px;
+
+    padding:20px;
+
+    box-shadow:
+
+    0 2px 12px rgba(0,0,0,.05);
+
+}
+
+.stat-number{
+
+    font-size:2rem;
+
+    font-weight:bold;
+
+    color:var(--primary);
+
+}
+
+.toolbar{
+
+    display:flex;
+
+    flex-wrap:wrap;
+
+    gap:10px;
+
+    margin-bottom:20px;
+
+}
+
+.search{
+
+    flex:1;
+
+    min-width:250px;
+
+}
+
+.search input{
+
+    width:100%;
+
+    padding:14px;
+
+    border:1px solid #ddd;
+
+    border-radius:12px;
+
+}
+
+.chip{
+
+    background:white;
+
+    border:none;
+
+    padding:12px 16px;
+
+    border-radius:999px;
+
+    cursor:pointer;
+
+    box-shadow:
+
+    0 1px 5px rgba(0,0,0,.05);
+
+}
+
+.chip:hover{
+
+    background:var(--primary-light);
+
+}
+
+.feed{
+
+    display:grid;
+
+    gap:16px;
+
+}
+
+.card{
+
+    background:white;
+
+    border-radius:18px;
+
+    padding:20px;
+
+    box-shadow:
+
+    0 2px 10px rgba(0,0,0,.05);
+
+}
+
+.badge{
+
+    display:inline-block;
+
+    padding:5px 10px;
+
+    border-radius:999px;
+
+    font-size:.8rem;
+
+}
+
+.high{
+
+    background:#fde7e9;
+
+    color:var(--high);
+
+}
+
+.medium{
+
+    background:#fff4ce;
+
+    color:#8a6d00;
+
+}
+
+.low{
+
+    background:#dff6dd;
+
+    color:var(--low);
+
+}
+
+.card h3{
+
+    margin-top:12px;
+
+    margin-bottom:8px;
+
+}
+
+.date{
+
+    color:var(--muted);
+
+    font-size:.9rem;
+
+}
+
+.action{
+
+    background:#f8fafc;
+
+    padding:12px;
+
+    border-radius:10px;
+
+    margin-top:15px;
+
+}
+
+footer{
+
+    text-align:center;
+
+    color:#666;
+
+    padding:30px;
+
+}
+
+.error{
+
+    background:#fff4ce;
+
+    border-left:5px solid #ffb900;
+
+    padding:15px;
+
+    border-radius:10px;
+
+    margin-bottom:20px;
+
+}
+
+a{
+
+    color:var(--primary);
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<header>
+
+<h1>🛡️ Fraude Radar Nederland</h1>
+
+<p id="updated">
+
+Live waarschuwingen van Fraudehelpdesk
+
+</p>
+
+</header>
+
+<div class="container">
+
+<div id="error"></div>
+
+<div class="stats">
+
+<div class="stat">
+
+<div class="stat-number" id="total">0</div>
+
+Alerts
+
+</div>
+
+<div class="stat">
+
+<div class="stat-number" id="highCount">0</div>
+
+Hoog risico
+
+</div>
+
+<div class="stat">
+
+<div class="stat-number" id="weekCount">0</div>
+
+Laatste 7 dagen
+
+</div>
+
+<div class="stat">
+
+<div class="stat-number" id="catCount">0</div>
+
+Categorieën
+
+</div>
+
+</div>
+
+<div class="toolbar">
+
+<div class="search">
+
+<input id="search"
+
+placeholder="Zoek op PayPal, politie, BSN, sms..." />
+
+</div>
+
+<button class="chip" onclick="setCategory('all')">
+
+Alles
+
+</button>
+
+<button class="chip" onclick="setCategory('telefoon')">
+
+📞 Telefoon
+
+</button>
+
+<button class="chip" onclick="setCategory('email')">
+
+📧 E-mail
+
+</button>
+
+<button class="chip" onclick="setCategory('overheid')">
+
+🏛️ Overheid
+
+</button>
+
+<button class="chip" onclick="setCategory('financieel')">
+
+💳 Financieel
+
+</button>
+
+<button class="chip" onclick="setCategory('reizen')">
+
+✈️ Reizen
+
+</button>
+
+</div>
+
+<div class="feed" id="feed"></div>
+
+</div>
+
+<footer>
+
+Ontwikkeld door <strong>M. Kreeft</strong><br>
+
+Data afkomstig van Fraudehelpdesk
+
+</footer>
+
+<script>
+
+const FEED_URL =
+
+'https://api.rss2json.com/v1/api.json?rss_url=' +
+
+encodeURIComponent(
+
+'https://www.fraudehelpdesk.nl/feed/?post_type=alert'
+
+);
+
+let currentCategory='all';
+
+let alerts=[];
+
+function setCategory(cat){
+
+    currentCategory=cat;
+
+    render();
+
+}
+
+function category(text){
+
+    text=text.toLowerCase();
+
+    if(text.includes('telefoon') ||
+
+       text.includes('bellen'))
+
+        return 'telefoon';
+
+    if(text.includes('mail'))
+
+        return 'email';
+
+    if(text.includes('paypal') ||
+
+       text.includes('ideal') ||
+
+       text.includes('klarna'))
+
+        return 'financieel';
+
+    if(text.includes('politie') ||
+
+       text.includes('europol') ||
+
+       text.includes('belasting'))
+
+        return 'overheid';
+
+    if(text.includes('visum') ||
+
+       text.includes('eta'))
+
+        return 'reizen';
+
+    return 'overig';
+
+}
+
+function risk(text){
+
+    text=text.toLowerCase();
+
+    if(
+
+      text.includes('bsn') ||
+
+      text.includes('politie') ||
+
+      text.includes('europol') ||
+
+      text.includes('paypal') ||
+
+      text.includes('belasting')
+
+    ){
+
+        return 'high';
+
+    }
+
+    if(
+
+      text.includes('sms') ||
+
+      text.includes('visum') ||
+
+      text.includes('eta') ||
+
+      text.includes('beleggen')
+
+    ){
+
+        return 'medium';
+
+    }
+
+    return 'low';
+
+}
+
+function advice(r){
+
+    if(r==='high')
+
+        return 'Klik niet op links, installeer geen software en geef geen gegevens af.';
+
+    if(r==='medium')
+
+        return 'Controleer afzender en website zorgvuldig voordat u actie onderneemt.';
+
+    return 'Blijf alert en controleer de bron.';
+
+}
+
+async function loadFeed(){
+
+try{
+
+const response=
+
+await fetch(FEED_URL);
+
+const data=
+
+await response.json();
+
+alerts=
+
+data.items || [];
+
+document.getElementById('updated')
+
+.innerText=
+
+'Laatste update: ' +
+
+new Date().toLocaleString('nl-NL');
+
+render();
+
+}
+
+catch(e){
+
+document.getElementById('error')
+
+.innerHTML=
+
+'<div class="error">Feed tijdelijk niet bereikbaar.</div>';
+
+}
+
+}
+
+function render(){
+
+const q=
+
+document.getElementById('search')
+
+.value
+
+.toLowerCase();
+
+let filtered=
+
+alerts.filter(item=>{
+
+const text=
+
+(item.title + item.description)
+
+.toLowerCase();
+
+const cat=
+
+category(text);
+
+return text.includes(q)
+
+&&
+
+(currentCategory==='all'
+
+ || currentCategory===cat);
+
+});
+
+document.getElementById('total')
+
+.innerText=filtered.length;
+
+document.getElementById('highCount')
+
+.innerText=
+
+filtered.filter(
+
+x=>risk(x.title+x.description)
+
+==='high'
+
+).length;
+
+document.getElementById('weekCount')
+
+.innerText=
+
+filtered.filter(
+
+x=>
+
+Date.now() -
+
+new Date(x.pubDate).getTime()
+
+<
+
+604800000
+
+).length;
+
+document.getElementById('catCount')
+
+.innerText=
+
+new Set(
+
+filtered.map(
+
+x=>category(x.title+x.description)
+
+)
+
+).size;
+
+document.getElementById('feed')
+
+.innerHTML=
+
+filtered.map(item=>{
+
+const r=
+
+risk(item.title+item.description);
+
+return `
+
+<div class="card">
+
+<span class="badge ${r}">
+
+${r.toUpperCase()}
+
+</span>
+
+<h3>${item.title}</h3>
+
+<div class="date">
+
+${new Date(item.pubDate)
+
+.toLocaleDateString('nl-NL')}
+
+</div>
+
+<p>
+
+${(item.description||'')
+
+.replace(/<[^>]+>/g,'')
+
+.substring(0,350)}
+
+...
+
+</p>
+
+<div class="action">
+
+<strong>Advies:</strong><br>
+
+${advice(r)}
+
+</div>
+
+<p>
+
+<a href="${item.link}"
+
+target="_blank">
+
+Lees origineel bericht →
+
+</a>
+
+</p>
+
+</div>
+
+`;
+
+}).join('');
+
+}
+
+document
+
+.getElementById('search')
+
+.addEventListener('input',render);
+
+loadFeed();
+
+setInterval(
+
+loadFeed,
+
+15*60*1000
+
+);
+
+</script>
+
+</body>
+
+</html>
