@@ -928,6 +928,13 @@ main { padding: 26px 0 38px; }
   margin-bottom: 6px;
 }
 
+.alert-card-tags {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
 .badge {
   display: inline-flex;
   align-items: center;
@@ -975,17 +982,10 @@ main { padding: 26px 0 38px; }
   letter-spacing: -0.01em;
 }
 
-.alert-meta {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 5px;
-  margin-bottom: 8px;
-}
-
 .cat-tag {
-  font-size: 0.7rem;
+  font-size: 0.65rem;
   font-weight: 650;
-  padding: 3px 9px;
+  padding: 2px 8px;
   border-radius: 999px;
   background: var(--accent-light);
   color: var(--ink-760);
@@ -1626,13 +1626,13 @@ function render() {
     return `
       <article class="alert-card alert-card--${r}" style="animation-delay:${delay}s">
         <div class="alert-card-header">
-          <span class="badge ${r}">${RISK_LABELS[r]} risico</span>
+          <div class="alert-card-tags">
+            <span class="badge ${r}">${RISK_LABELS[r]} risico</span>
+            <span class="cat-tag">${CAT_LABELS[cat]}</span>
+          </div>
           <time class="alert-date">${new Date(item.pubDate).toLocaleDateString('nl-NL', { day: 'numeric', month: 'long', year: 'numeric' })}</time>
         </div>
         <h3>${esc(item.title)}</h3>
-        <div class="alert-meta">
-          <span class="cat-tag">${CAT_LABELS[cat]}</span>
-        </div>
         <p class="alert-excerpt">${esc(excerpt(item.description, 180))}</p>
         <div class="action-box action-box--${r}">
           <strong>Wat moet ik doen?</strong>
