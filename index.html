@@ -89,7 +89,7 @@ a:hover { text-decoration: underline; }
 .site-header {
   background: linear-gradient(135deg, var(--navy-950) 0%, oklch(28% 0.1 250) 50%, oklch(32% 0.12 220) 100%);
   color: oklch(98% 0.005 250);
-  padding: 22px 0 28px;
+  padding: 8px 0 10px;
   border-bottom: 1px solid oklch(100% 0 0 / 0.1);
   position: relative;
   overflow: hidden;
@@ -125,23 +125,23 @@ a:hover { text-decoration: underline; }
   100% { background-position: -200% 0; }
 }
 
-.header-top {
+.header-bar {
   display: flex;
   align-items: center;
-  justify-content: space-between;
   gap: 12px;
-  flex-wrap: wrap;
+  min-height: 40px;
 }
 
 .brand {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 8px;
+  flex-shrink: 0;
 }
 
 .brand-mark {
-  width: 40px;
-  height: 40px;
+  width: 30px;
+  height: 30px;
   border-radius: var(--radius-sm);
   background: oklch(100% 0 0 / 0.1);
   border: 1px solid oklch(100% 0 0 / 0.2);
@@ -149,19 +149,17 @@ a:hover { text-decoration: underline; }
   place-items: center;
   flex-shrink: 0;
   animation: shield-pulse 3s ease-in-out infinite;
-  box-shadow: 0 0 16px oklch(72% 0.14 195 / 0.3);
+  box-shadow: 0 0 12px oklch(72% 0.14 195 / 0.25);
 }
 
-@keyframes shield-pulse {
-  0%, 100% { box-shadow: 0 0 12px oklch(72% 0.14 195 / 0.25); transform: scale(1); }
-  50% { box-shadow: 0 0 24px oklch(72% 0.14 195 / 0.5); transform: scale(1.04); }
-}
+.brand-mark svg { display: block; width: 16px; height: 16px; }
 
 .brand h1 {
   margin: 0;
-  font-size: 1.2rem;
+  font-size: 0.9375rem;
   font-weight: 700;
   letter-spacing: -0.02em;
+  line-height: 1.15;
   background: linear-gradient(90deg, oklch(98% 0 0), var(--cyan), oklch(98% 0 0));
   background-size: 200% auto;
   -webkit-background-clip: text;
@@ -170,33 +168,30 @@ a:hover { text-decoration: underline; }
   animation: title-shine 4s linear infinite;
 }
 
-@keyframes title-shine {
-  0% { background-position: 200% center; }
-  100% { background-position: -200% center; }
-}
-
 .brand-tagline {
-  margin: 2px 0 0;
-  font-size: 0.8125rem;
-  color: oklch(88% 0.01 230);
+  margin: 0;
+  font-size: 0.6875rem;
+  color: oklch(82% 0.01 250);
+  line-height: 1.2;
 }
 
 .status-pill {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  padding: 6px 12px;
+  gap: 5px;
+  padding: 4px 9px;
   border-radius: 999px;
-  font-size: 0.75rem;
+  font-size: 0.6875rem;
   font-weight: 600;
   background: oklch(100% 0 0 / 0.08);
   border: 1px solid oklch(100% 0 0 / 0.12);
   white-space: nowrap;
+  flex-shrink: 0;
 }
 
 .status-dot {
-  width: 7px;
-  height: 7px;
+  width: 6px;
+  height: 6px;
   border-radius: 50%;
   background: var(--muted);
   flex-shrink: 0;
@@ -237,11 +232,26 @@ a:hover { text-decoration: underline; }
 }
 
 .header-intro {
-  margin: 16px 0 0;
-  max-width: 52ch;
-  font-size: 0.875rem;
-  color: oklch(86% 0.01 230);
-  line-height: 1.5;
+  flex: 1;
+  margin: 0;
+  text-align: center;
+  font-size: 0.75rem;
+  color: oklch(86% 0.01 250);
+  line-height: 1.2;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+
+@keyframes shield-pulse {
+  0%, 100% { box-shadow: 0 0 10px oklch(72% 0.14 195 / 0.2); transform: scale(1); }
+  50% { box-shadow: 0 0 18px oklch(72% 0.14 195 / 0.4); transform: scale(1.03); }
+}
+
+@keyframes title-shine {
+  0% { background-position: 200% center; }
+  100% { background-position: -200% center; }
 }
 
 /* Main */
@@ -758,8 +768,6 @@ main { padding: 24px 0 32px; }
   margin-right: 6px;
 }
 
-.brand-mark svg { display: block; width: 20px; height: 20px; }
-
 .btn-link svg {
   width: 12px;
   height: 12px;
@@ -844,9 +852,11 @@ main { padding: 24px 0 32px; }
 }
 
 @media (max-width: 768px) {
+  .header-bar { flex-wrap: wrap; gap: 6px 10px; min-height: 0; }
+  .header-intro { order: 3; flex: 1 1 100%; font-size: 0.6875rem; }
   .dashboard { grid-template-columns: 1fr; }
   .stats { grid-template-columns: repeat(2, 1fr); }
-  .brand h1 { font-size: 1.05rem; }
+  .brand h1 { font-size: 0.875rem; }
 }
 
 @media (max-width: 480px) {
@@ -858,10 +868,10 @@ main { padding: 24px 0 32px; }
 
 <header class="site-header">
   <div class="inner">
-    <div class="header-top">
+    <div class="header-bar">
       <div class="brand">
         <div class="brand-mark" aria-hidden="true">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round">
             <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
             <path d="M9 12l2 2 4-4"/>
           </svg>
@@ -871,12 +881,12 @@ main { padding: 24px 0 32px; }
           <p class="brand-tagline" id="updated">Waarschuwingen van de Fraudehelpdesk</p>
         </div>
       </div>
+      <p class="header-intro">Fraudehelpdesk-alerts met risico-analyse · vernieuwd elke 15 min</p>
       <div class="status-pill loading" id="statusPill">
         <span class="status-dot"></span>
         <span id="statusText">Feed laden…</span>
       </div>
     </div>
-    <p class="header-intro">Actuele waarschuwingen van de Fraudehelpdesk, geanalyseerd op risico en categorie. Vernieuwd elke 15 minuten.</p>
   </div>
 </header>
 
