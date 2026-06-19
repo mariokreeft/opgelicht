@@ -374,64 +374,148 @@ main { padding: 26px 0 38px; }
 
 .overview-link.primary:hover { background: oklch(80% 0.13 195); }
 
-.radar-visual {
+.radar-map {
   position: relative;
   z-index: 1;
-  width: 270px;
-  height: 270px;
+  width: min(100%, 300px);
   justify-self: end;
+}
+
+.radar-scope {
+  position: relative;
+  aspect-ratio: 1;
   border-radius: 50%;
+  overflow: hidden;
   background:
-    repeating-radial-gradient(circle, oklch(100% 0 0 / 0.16) 0 1px, transparent 1px 46px),
-    radial-gradient(circle at center, oklch(74% 0.14 195 / 0.24), transparent 58%);
-  border: 1px solid oklch(100% 0 0 / 0.16);
-  box-shadow: inset 0 0 40px oklch(74% 0.14 195 / 0.18), 0 0 60px var(--cyan-glow);
+    radial-gradient(circle at 50% 50%, oklch(30% 0.08 200 / 0.55) 0%, oklch(16% 0.06 245 / 0.9) 70%, oklch(12% 0.05 250) 100%);
+  border: 1px solid oklch(74% 0.14 195 / 0.4);
+  box-shadow:
+    inset 0 0 50px oklch(74% 0.14 195 / 0.18),
+    inset 0 0 8px oklch(100% 0 0 / 0.18),
+    0 0 60px var(--cyan-glow);
 }
 
-.radar-visual::before {
+.radar-rings {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    repeating-radial-gradient(circle at 50% 50%, oklch(74% 0.14 195 / 0.22) 0 1px, transparent 1px, transparent calc(100% / 8));
+}
+
+.radar-cross {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background:
+    linear-gradient(to right, transparent calc(50% - 0.5px), oklch(74% 0.14 195 / 0.22) 50%, transparent calc(50% + 0.5px)),
+    linear-gradient(to bottom, transparent calc(50% - 0.5px), oklch(74% 0.14 195 / 0.22) 50%, transparent calc(50% + 0.5px));
+}
+
+.radar-land {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  height: 86%;
+  aspect-ratio: 262 / 302;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+
+.radar-land svg {
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  display: block;
+  filter: drop-shadow(0 0 6px oklch(74% 0.14 195 / 0.35));
+}
+
+.nl-land {
+  fill: oklch(72% 0.13 195 / 0.16);
+  stroke: oklch(82% 0.13 195 / 0.85);
+  stroke-width: 3;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+
+.nl-water {
+  fill: oklch(14% 0.05 250 / 0.78);
+  stroke: oklch(82% 0.13 195 / 0.45);
+  stroke-width: 2;
+  stroke-linejoin: round;
+}
+
+.radar-beam {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  will-change: transform;
+  background: conic-gradient(
+    from 0deg at 50% 50%,
+    transparent 0deg,
+    transparent 290deg,
+    oklch(74% 0.14 195 / 0.04) 320deg,
+    oklch(78% 0.14 195 / 0.16) 346deg,
+    oklch(80% 0.15 195 / 0.55) 360deg
+  );
+  -webkit-mask: radial-gradient(circle at 50% 50%, #000 0 99%, transparent 100%);
+  mask: radial-gradient(circle at 50% 50%, #000 0 99%, transparent 100%);
+}
+
+.radar-beam::after {
   content: '';
   position: absolute;
-  inset: 50% 50% auto auto;
-  width: 50%;
+  left: 50%;
+  top: 0;
+  width: 2px;
   height: 50%;
-  transform-origin: 0 0;
-  background: conic-gradient(from 0deg, var(--cyan-glow), transparent 58deg);
-  animation: radar-arm 4.8s linear infinite;
+  transform-origin: bottom center;
+  background: linear-gradient(to top, transparent, oklch(92% 0.12 195 / 0.95));
+  box-shadow: 0 0 10px oklch(80% 0.15 195 / 0.8);
 }
 
-.radar-visual::after {
-  content: '';
+.radar-center {
   position: absolute;
-  inset: 50%;
-  width: 10px;
-  height: 10px;
-  margin: -5px;
+  left: 50%;
+  top: 50%;
+  width: 9px;
+  height: 9px;
+  transform: translate(-50%, -50%);
   border-radius: 50%;
   background: var(--cyan);
-  box-shadow: 0 0 24px var(--cyan-glow);
+  box-shadow: 0 0 16px var(--cyan-glow), 0 0 4px oklch(95% 0.1 195);
+  pointer-events: none;
+}
+
+.radar-blips {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
 }
 
 .radar-blip {
   position: absolute;
-  width: 9px;
-  height: 9px;
+  width: 10px;
+  height: 10px;
   border-radius: 50%;
   background: var(--high);
-  box-shadow: 0 0 18px var(--high-glow);
-  animation: blip 2.8s ease-in-out infinite;
+  transform: translate(-50%, -50%) scale(0.7);
+  opacity: 0.16;
+  will-change: opacity, transform;
 }
 
-.radar-blip:nth-child(1) { top: 28%; left: 64%; animation-delay: 0.2s; }
-.radar-blip:nth-child(2) { top: 61%; left: 26%; background: var(--medium); box-shadow: 0 0 18px var(--medium-glow); animation-delay: 0.8s; }
-.radar-blip:nth-child(3) { top: 72%; left: 70%; background: var(--low); box-shadow: 0 0 18px var(--low-glow); animation-delay: 1.4s; }
+.radar-caption {
+  margin: 12px 0 0;
+  text-align: center;
+  font-size: 0.7rem;
+  font-weight: 650;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: oklch(80% 0.04 195);
+}
 
 @keyframes radar-arm {
   to { transform: rotate(360deg); }
-}
-
-@keyframes blip {
-  0%, 100% { transform: scale(0.8); opacity: 0.55; }
-  45% { transform: scale(1.45); opacity: 1; }
 }
 
 .section-label {
@@ -1079,9 +1163,8 @@ main { padding: 26px 0 38px; }
     font-size: clamp(2.5rem, 14vw, 4.3rem);
   }
   .overview p { font-size: 0.96rem; }
-  .radar-visual {
-    width: 210px;
-    height: 210px;
+  .radar-map {
+    width: min(100%, 240px);
     justify-self: center;
   }
   .dashboard { grid-template-columns: 1fr; }
@@ -1140,10 +1223,21 @@ main { padding: 26px 0 38px; }
           <a class="overview-link" href="https://www.fraudehelpdesk.nl/alert/" target="_blank" rel="noopener">Bron: Fraudehelpdesk</a>
         </div>
       </div>
-      <div class="radar-visual" aria-hidden="true">
-        <span class="radar-blip"></span>
-        <span class="radar-blip"></span>
-        <span class="radar-blip"></span>
+      <div class="radar-map" id="radarMap" aria-hidden="true">
+        <div class="radar-scope">
+          <div class="radar-rings"></div>
+          <div class="radar-cross"></div>
+          <div class="radar-land">
+            <svg viewBox="0 0 262 302" aria-hidden="true">
+              <path class="nl-land" d="M92 57 L141 44 L169 8 L193 6 L261 0 L262 32 L252 70 L226 102 L252 138 L190 174 L207 182 L191 214 L195 233 L185 255 L184 282 L181 302 L155 292 L163 271 L149 250 L128 245 L117 222 L95 219 L70 224 L33 224 L0 239 L10 205 L22 195 L44 185 L47 161 L56 130 L74 112 L81 91 Z"/>
+              <path class="nl-water" d="M132 52 L149 68 L156 102 L142 124 L125 119 L115 102 L119 74 Z"/>
+            </svg>
+            <div class="radar-blips" id="radarBlips"></div>
+          </div>
+          <div class="radar-beam" id="radarBeam"></div>
+          <div class="radar-center"></div>
+        </div>
+        <p class="radar-caption" id="radarCaption">Radar laadt…</p>
       </div>
     </section>
 
@@ -1244,9 +1338,134 @@ const CAT_LABELS = {
 };
 
 const RISK_LABELS = { high: 'Hoog', medium: 'Middel', low: 'Laag' };
+const RADAR_PERIOD = 4160;
+const RADAR_DECAY = 46;
+const RADAR_VB = { w: 262, h: 302, cx: 131, cy: 151 };
+const NL_POLY = [
+  [92, 57], [141, 44], [169, 8], [193, 6], [261, 0], [262, 32], [252, 70], [226, 102],
+  [252, 138], [190, 174], [207, 182], [191, 214], [195, 233], [185, 255], [184, 282],
+  [181, 302], [155, 292], [163, 271], [149, 250], [128, 245], [117, 222], [95, 219],
+  [70, 224], [33, 224], [0, 239], [10, 205], [22, 195], [44, 185], [47, 161], [56, 130],
+  [74, 112], [81, 91]
+];
+const IJSSELMEER = [
+  [132, 52], [149, 68], [156, 102], [142, 124], [125, 119], [115, 102], [119, 74]
+];
 
 let alerts = [];
 let currentCategory = 'all';
+let radarBlipEls = [];
+let radarLoopRunning = false;
+
+function seededRandom(seed) {
+  let h = 2166136261;
+  for (let i = 0; i < seed.length; i++) {
+    h ^= seed.charCodeAt(i);
+    h = Math.imul(h, 16777619);
+  }
+  return () => {
+    h += 0x6D2B79F5;
+    let t = Math.imul(h ^ (h >>> 15), 1 | h);
+    t ^= t + Math.imul(t ^ (t >>> 7), 61 | t);
+    return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+  };
+}
+
+function pointInPoly(x, y, poly) {
+  let inside = false;
+  for (let i = 0, j = poly.length - 1; i < poly.length; j = i++) {
+    const xi = poly[i][0], yi = poly[i][1];
+    const xj = poly[j][0], yj = poly[j][1];
+    const intersect = ((yi > y) !== (yj > y)) &&
+      (x < ((xj - xi) * (y - yi)) / (yj - yi) + xi);
+    if (intersect) inside = !inside;
+  }
+  return inside;
+}
+
+function onLand(x, y) {
+  return pointInPoly(x, y, NL_POLY) && !pointInPoly(x, y, IJSSELMEER);
+}
+
+function nlBlipPosition(seed) {
+  const rnd = seededRandom(String(seed));
+  for (let i = 0; i < 80; i++) {
+    const x = 6 + rnd() * 250;
+    const y = 6 + rnd() * 290;
+    if (onLand(x, y)) return { x, y };
+  }
+  return { x: 120, y: 150 };
+}
+
+function blipAngle(x, y) {
+  return (Math.atan2(x - RADAR_VB.cx, -(y - RADAR_VB.cy)) * 180 / Math.PI + 360) % 360;
+}
+
+function renderRadarBlips(highAlerts) {
+  const container = document.getElementById('radarBlips');
+  const caption = document.getElementById('radarCaption');
+  if (!container) return;
+
+  const items = highAlerts.slice(0, 16);
+  container.innerHTML = items.map((item, i) => {
+    const pos = nlBlipPosition(item.link || item.title || String(i));
+    const angle = blipAngle(pos.x, pos.y);
+    const left = (pos.x / RADAR_VB.w) * 100;
+    const top = (pos.y / RADAR_VB.h) * 100;
+    return `<span class="radar-blip" style="left:${left.toFixed(2)}%;top:${top.toFixed(2)}%" data-angle="${angle.toFixed(2)}"></span>`;
+  }).join('');
+
+  radarBlipEls = [...container.querySelectorAll('.radar-blip')].map(el => ({
+    el, angle: parseFloat(el.dataset.angle)
+  }));
+
+  if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+    radarBlipEls.forEach(b => paintBlip(b.el, 0.85));
+  }
+
+  if (caption) {
+    if (!items.length) caption.textContent = 'Geen hoog-risico signalen';
+    else if (items.length === 1) caption.textContent = '1 hoog-risico signaal gedetecteerd';
+    else caption.textContent = items.length + ' hoog-risico signalen gedetecteerd';
+  }
+}
+
+function startRadarSweep() {
+  const beam = document.getElementById('radarBeam');
+  const reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  if (reduced) {
+    if (beam) beam.style.opacity = '0.5';
+    radarBlipEls.forEach(b => paintBlip(b.el, 0.85));
+    return;
+  }
+  if (radarLoopRunning) return;
+  radarLoopRunning = true;
+
+  function tick(now) {
+    const sweep = (now % RADAR_PERIOD) / RADAR_PERIOD * 360;
+    if (beam) beam.style.transform = `rotate(${sweep}deg)`;
+    for (const b of radarBlipEls) {
+      let delta = sweep - b.angle;
+      delta = ((delta % 360) + 360) % 360;
+      const intensity = Math.exp(-delta / RADAR_DECAY);
+      paintBlip(b.el, intensity);
+    }
+    requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+}
+
+function paintBlip(el, intensity) {
+  const op = 0.14 + 0.86 * intensity;
+  const scale = 0.65 + 0.95 * intensity;
+  const glow = 5 + 18 * intensity;
+  const light = 52 + 16 * intensity;
+  el.style.opacity = op.toFixed(3);
+  el.style.transform = `translate(-50%, -50%) scale(${scale.toFixed(3)})`;
+  el.style.background = `oklch(${light.toFixed(1)}% 0.23 25)`;
+  el.style.boxShadow = `0 0 ${glow.toFixed(1)}px oklch(55% 0.23 25 / ${(0.85 * intensity).toFixed(3)})`;
+}
 
 function esc(str) {
   const d = document.createElement('div');
@@ -1354,6 +1573,7 @@ function render() {
   });
 
   const highCount = filtered.filter(x => risk(x.title + x.description) === 'high').length;
+  const highAlerts = filtered.filter(x => risk(x.title + x.description) === 'high');
   const weekCount = filtered.filter(
     x => Date.now() - new Date(x.pubDate).getTime() < 604800000
   ).length;
@@ -1363,6 +1583,7 @@ function render() {
   setTextAnimated('highCount', highCount);
   setTextAnimated('weekCount', weekCount);
   setTextAnimated('catCount', catCount);
+  renderRadarBlips(highAlerts);
 
   const statHigh = document.getElementById('statHigh');
   statHigh.classList.toggle('stat--alert', highCount > 0);
@@ -1428,6 +1649,7 @@ function render() {
 }
 
 document.getElementById('search').addEventListener('input', render);
+startRadarSweep();
 loadFeed();
 setInterval(loadFeed, 15 * 60 * 1000);
 </script>
