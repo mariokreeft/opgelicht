@@ -5,42 +5,35 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Fraude Radar Nederland</title>
 <meta name="description" content="Actuele fraudealerts van de Fraudehelpdesk, automatisch geanalyseerd en voorzien van risicoclassificatie.">
-<meta name="theme-color" content="#0c2d4a">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<meta name="theme-color" content="#1a3348">
 <style>
 :root {
-  --navy-950: #061a2b;
-  --navy-900: #0c2d4a;
-  --navy-800: #123a5c;
-  --navy-700: #1a4d75;
-  --accent: #1d6fa3;
-  --accent-light: #e8f3fb;
-  --cyan: #06b6d4;
-  --cyan-light: #cffafe;
-  --cyan-mid: #67e8f9;
-  --cyan-dark: #0e7490;
-  --bg: #e0f2f7;
-  --surface: #ffffff;
-  --border: #d8e2ec;
-  --text: #1a2332;
-  --muted: #5c6b7a;
-  --high: #b42318;
-  --high-bg: #fef3f2;
-  --medium: #b54708;
-  --medium-bg: #fffaeb;
-  --low: #067647;
-  --low-bg: #ecfdf3;
+  --navy-950: oklch(22% 0.04 230);
+  --navy-900: oklch(28% 0.05 230);
+  --navy-800: oklch(34% 0.06 230);
+  --accent: oklch(48% 0.1 230);
+  --accent-light: oklch(94% 0.02 230);
+  --bg: oklch(96.5% 0.008 230);
+  --surface: oklch(99% 0.004 230);
+  --surface-raised: oklch(97.5% 0.006 230);
+  --border: oklch(88% 0.012 230);
+  --text: oklch(24% 0.02 230);
+  --muted: oklch(48% 0.015 230);
+  --high: oklch(48% 0.16 25);
+  --high-bg: oklch(96% 0.03 25);
+  --medium: oklch(52% 0.12 65);
+  --medium-bg: oklch(96.5% 0.03 85);
+  --low: oklch(46% 0.1 155);
+  --low-bg: oklch(96.5% 0.025 155);
   --radius-sm: 6px;
   --radius-md: 8px;
-  --radius-lg: 10px;
-  --shadow-sm: 0 1px 2px rgba(6, 26, 43, 0.05);
-  --shadow-md: 0 3px 12px rgba(6, 26, 43, 0.07);
-  --font: 'Plus Jakarta Sans', system-ui, sans-serif;
+  --shadow-sm: 0 1px 2px oklch(22% 0.02 230 / 0.06);
+  --shadow-md: 0 4px 14px oklch(22% 0.02 230 / 0.08);
+  --font: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-html { font-size: 13px; }
+html { font-size: 14px; }
 
 *, *::before, *::after { box-sizing: border-box; }
 
@@ -48,16 +41,9 @@ body {
   margin: 0;
   font-family: var(--font);
   font-size: 1rem;
-  background-color: var(--bg);
-  background-image:
-    radial-gradient(ellipse 80% 60% at 10% 0%, rgba(29, 111, 163, 0.2) 0%, transparent 55%),
-    radial-gradient(ellipse 75% 55% at 95% 15%, rgba(6, 182, 212, 0.32) 0%, transparent 52%),
-    radial-gradient(ellipse 55% 45% at 30% 80%, rgba(6, 182, 212, 0.18) 0%, transparent 50%),
-    radial-gradient(ellipse 60% 40% at 50% 100%, rgba(251, 191, 36, 0.1) 0%, transparent 55%),
-    linear-gradient(180deg, #d9eef5 0%, #e8f6fa 45%, #dceef5 100%);
-  background-attachment: fixed;
+  background: var(--bg);
   color: var(--text);
-  line-height: 1.45;
+  line-height: 1.5;
   -webkit-font-smoothing: antialiased;
 }
 
@@ -72,11 +58,10 @@ a:hover { text-decoration: underline; }
 
 /* Header */
 .site-header {
-  background: linear-gradient(155deg, var(--navy-950) 0%, #0e3a5e 45%, #1565a0 100%);
-  color: #fff;
-  padding: 18px 0 22px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  box-shadow: 0 4px 20px rgba(6, 26, 43, 0.15);
+  background: var(--navy-900);
+  color: oklch(98% 0.005 230);
+  padding: 20px 0 24px;
+  border-bottom: 1px solid oklch(100% 0 0 / 0.08);
 }
 
 .header-top {
@@ -94,11 +79,11 @@ a:hover { text-decoration: underline; }
 }
 
 .brand-mark {
-  width: 34px;
-  height: 34px;
+  width: 36px;
+  height: 36px;
   border-radius: var(--radius-sm);
-  background: rgba(255, 255, 255, 0.12);
-  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: oklch(100% 0 0 / 0.1);
+  border: 1px solid oklch(100% 0 0 / 0.14);
   display: grid;
   place-items: center;
   flex-shrink: 0;
@@ -115,40 +100,40 @@ a:hover { text-decoration: underline; }
 
 .brand-tagline {
   margin: 2px 0 0;
-  font-size: 0.77rem;
-  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.8125rem;
+  color: oklch(88% 0.01 230);
 }
 
 .status-pill {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 5px 10px;
+  padding: 6px 12px;
   border-radius: 999px;
-  font-size: 0.72rem;
+  font-size: 0.75rem;
   font-weight: 600;
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: oklch(100% 0 0 / 0.08);
+  border: 1px solid oklch(100% 0 0 / 0.12);
   white-space: nowrap;
 }
 
 .status-dot {
-  width: 6px;
-  height: 6px;
+  width: 7px;
+  height: 7px;
   border-radius: 50%;
-  background: #6b7280;
+  background: var(--muted);
   flex-shrink: 0;
 }
 
 .status-pill.online .status-dot {
-  background: #32d583;
-  box-shadow: 0 0 0 3px rgba(50, 213, 131, 0.25);
+  background: var(--low);
+  box-shadow: 0 0 0 3px oklch(46% 0.1 155 / 0.2);
 }
 
-.status-pill.offline .status-dot { background: #f97066; }
+.status-pill.offline .status-dot { background: var(--high); }
 
 .status-pill.loading .status-dot {
-  background: #fbbf24;
+  background: var(--medium);
   animation: pulse 1.2s ease-in-out infinite;
 }
 
@@ -157,69 +142,55 @@ a:hover { text-decoration: underline; }
   50% { opacity: 0.4; }
 }
 
-.hero-card {
-  margin-top: 14px;
-  max-width: 560px;
-  padding: 10px 14px;
-  border-radius: var(--radius-md);
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.14);
-}
-
-.hero-card h2 {
-  margin: 0 0 4px;
-  font-size: 0.88rem;
-  font-weight: 600;
-}
-
-.hero-card p {
-  margin: 0;
-  font-size: 0.77rem;
-  color: rgba(255, 255, 255, 0.78);
-  line-height: 1.4;
+.header-intro {
+  margin: 16px 0 0;
+  max-width: 52ch;
+  font-size: 0.875rem;
+  color: oklch(86% 0.01 230);
+  line-height: 1.5;
 }
 
 /* Main */
-main { padding: 18px 0 28px; }
+main { padding: 24px 0 32px; }
 
 .section-label {
-  font-size: 0.68rem;
+  font-size: 0.6875rem;
   font-weight: 600;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.05em;
   text-transform: uppercase;
   color: var(--muted);
-  margin: 0 0 8px;
+  margin: 0 0 10px;
 }
 
 .stats {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
-  gap: 8px;
-  margin-bottom: 14px;
+  gap: 10px;
+  margin-bottom: 20px;
 }
 
 .stat {
-  background: rgba(255, 255, 255, 0.88);
-  backdrop-filter: blur(8px);
+  background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
-  padding: 10px 12px;
+  padding: 12px 14px;
   box-shadow: var(--shadow-sm);
 }
 
 .stat-value {
-  font-size: 1.35rem;
+  font-size: 1.25rem;
   font-weight: 700;
   color: var(--navy-900);
   letter-spacing: -0.02em;
-  line-height: 1.1;
+  line-height: 1.2;
+  font-variant-numeric: tabular-nums;
 }
 
-.stat-value.text { font-size: 0.92rem; font-weight: 600; }
+.stat-value.text { font-size: 0.9375rem; font-weight: 600; }
 
 .stat-label {
-  margin-top: 3px;
-  font-size: 0.7rem;
+  margin-top: 4px;
+  font-size: 0.75rem;
   color: var(--muted);
   font-weight: 500;
 }
@@ -227,16 +198,15 @@ main { padding: 18px 0 28px; }
 .dashboard {
   display: grid;
   grid-template-columns: 1.4fr 1fr;
-  gap: 10px;
-  margin-bottom: 14px;
+  gap: 12px;
+  margin-bottom: 24px;
 }
 
 .panel {
-  background: rgba(255, 255, 255, 0.88);
-  backdrop-filter: blur(8px);
+  background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
-  padding: 12px 14px;
+  padding: 14px 16px;
   box-shadow: var(--shadow-sm);
 }
 
@@ -249,17 +219,17 @@ main { padding: 18px 0 28px; }
 .meter-wrap { margin-top: 10px; }
 
 .meter {
-  height: 7px;
+  height: 8px;
   border-radius: 999px;
-  background: #e0e8f0;
+  background: var(--surface-raised);
   overflow: hidden;
 }
 
 .meter-fill {
   height: 100%;
   border-radius: 999px;
-  background: linear-gradient(90deg, #32d583, #fbbf24, #f97066);
-  transition: width 0.5s ease;
+  background: var(--accent);
+  transition: width 0.22s var(--ease-out);
 }
 
 .meter-labels {
@@ -320,35 +290,41 @@ main { padding: 18px 0 28px; }
 
 .search-wrap input {
   width: 100%;
-  padding: 7px 10px 7px 32px;
+  padding: 8px 12px 8px 34px;
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
   font-family: var(--font);
-  font-size: 0.8rem;
-  background: rgba(255, 255, 255, 0.9);
+  font-size: 0.875rem;
+  background: var(--surface);
   color: var(--text);
-  transition: border-color 0.15s, box-shadow 0.15s;
+  transition: border-color 0.18s var(--ease-out), box-shadow 0.18s var(--ease-out);
 }
 
 .search-wrap input:focus {
   outline: none;
   border-color: var(--accent);
-  box-shadow: 0 0 0 2px rgba(29, 111, 163, 0.15);
+  box-shadow: 0 0 0 3px oklch(48% 0.1 230 / 0.15);
+}
+
+.search-wrap input:focus-visible {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px oklch(48% 0.1 230 / 0.15);
 }
 
 .chips { display: flex; flex-wrap: wrap; gap: 5px; }
 
 .chip {
   border: 1px solid var(--border);
-  background: rgba(255, 255, 255, 0.9);
+  background: var(--surface);
   border-radius: 999px;
-  padding: 5px 10px;
+  padding: 6px 12px;
   font-family: var(--font);
-  font-size: 0.72rem;
+  font-size: 0.75rem;
   font-weight: 500;
   color: var(--muted);
   cursor: pointer;
-  transition: all 0.15s;
+  transition: border-color 0.18s var(--ease-out), color 0.18s var(--ease-out), background 0.18s var(--ease-out);
 }
 
 .chip:hover {
@@ -356,10 +332,16 @@ main { padding: 18px 0 28px; }
   color: var(--accent);
 }
 
+.chip:focus-visible {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px oklch(48% 0.1 230 / 0.15);
+}
+
 .chip.active {
   background: var(--navy-900);
   border-color: var(--navy-900);
-  color: #fff;
+  color: oklch(98% 0.005 230);
 }
 
 .feed-header {
@@ -386,18 +368,17 @@ main { padding: 18px 0 28px; }
 }
 
 .alert-card {
-  background: rgba(255, 255, 255, 0.92);
-  backdrop-filter: blur(8px);
+  background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-md);
-  padding: 12px 14px;
+  padding: 14px 16px;
   box-shadow: var(--shadow-sm);
-  transition: box-shadow 0.2s, border-color 0.2s;
+  transition: box-shadow 0.2s var(--ease-out), border-color 0.2s var(--ease-out);
 }
 
 .alert-card:hover {
   box-shadow: var(--shadow-md);
-  border-color: #c5d3e0;
+  border-color: oklch(82% 0.015 230);
 }
 
 .alert-card-header {
@@ -462,26 +443,44 @@ main { padding: 18px 0 28px; }
 }
 
 .action-box {
-  margin-top: 10px;
-  padding: 9px 12px;
+  margin-top: 12px;
+  padding: 10px 12px;
   border-radius: var(--radius-sm);
-  background-color: var(--high);
-  background: linear-gradient(135deg, rgba(202, 224, 247, 1) 0%, rgba(177, 202, 226, 1) 100%);
-  border: 1px solid #0ea5e9;
-  border-left: 3px solid #0284c7;
-  font-size: 0.75rem;
-  color: rgba(12, 74, 110, 1);
+  border: 1px solid var(--border);
+  font-size: 0.8125rem;
+  line-height: 1.45;
+}
+
+.action-box--high {
+  background: var(--high-bg);
+  border-color: oklch(88% 0.04 25);
+  color: oklch(32% 0.06 25);
+}
+
+.action-box--medium {
+  background: var(--medium-bg);
+  border-color: oklch(88% 0.04 65);
+  color: oklch(34% 0.05 65);
+}
+
+.action-box--low {
+  background: var(--low-bg);
+  border-color: oklch(88% 0.03 155);
+  color: oklch(32% 0.05 155);
 }
 
 .action-box strong {
   display: block;
-  margin-bottom: 3px;
-  font-size: 0.72rem;
+  margin-bottom: 4px;
+  font-size: 0.75rem;
   font-weight: 700;
-  color: #075985;
   letter-spacing: 0.02em;
   text-transform: uppercase;
 }
+
+.action-box--high strong { color: var(--high); }
+.action-box--medium strong { color: var(--medium); }
+.action-box--low strong { color: var(--low); }
 
 .alert-footer {
   margin-top: 10px;
@@ -500,15 +499,22 @@ main { padding: 18px 0 28px; }
 
 .btn-link svg { width: 12px; height: 12px; }
 
-.btn-link:hover { text-decoration: none; opacity: 0.85; }
+.btn-link:hover { text-decoration: none; color: var(--navy-800); }
+
+.btn-link:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px oklch(48% 0.1 230 / 0.15);
+  border-radius: 4px;
+}
 
 /* States */
 .skeleton {
-  background: linear-gradient(90deg, #dde8f2 25%, #eef4f9 50%, #dde8f2 75%);
+  background: linear-gradient(90deg, var(--surface-raised) 25%, var(--surface) 50%, var(--surface-raised) 75%);
   background-size: 200% 100%;
   animation: shimmer 1.4s infinite;
   border-radius: var(--radius-md);
-  height: 72px;
+  height: 80px;
+  border: 1px solid var(--border);
 }
 
 @keyframes shimmer {
@@ -518,12 +524,12 @@ main { padding: 18px 0 28px; }
 
 .empty-state {
   text-align: center;
-  padding: 28px 16px;
-  background: rgba(255, 255, 255, 0.9);
+  padding: 32px 20px;
+  background: var(--surface);
   border: 1px dashed var(--border);
   border-radius: var(--radius-md);
   color: var(--muted);
-  font-size: 0.8rem;
+  font-size: 0.875rem;
   grid-column: 1 / -1;
 }
 
@@ -537,11 +543,10 @@ main { padding: 18px 0 28px; }
 /* Footer */
 .site-footer {
   border-top: 1px solid var(--border);
-  background: rgba(255, 255, 255, 0.75);
-  backdrop-filter: blur(8px);
-  padding: 16px 0;
+  background: var(--surface-raised);
+  padding: 20px 0;
   text-align: center;
-  font-size: 0.75rem;
+  font-size: 0.8125rem;
   color: var(--muted);
 }
 
@@ -596,10 +601,7 @@ main { padding: 18px 0 28px; }
         <span id="statusText">Feed laden…</span>
       </div>
     </div>
-    <div class="hero-card">
-      <h2>Actueel overzicht van fraudealerts</h2>
-      <p>Automatisch verzameld uit de officiële feed van de Fraudehelpdesk, geanalyseerd op risiconiveau en categorie. Vernieuwd elke 15 minuten.</p>
-    </div>
+    <p class="header-intro">Actuele waarschuwingen van de Fraudehelpdesk, geanalyseerd op risico en categorie. Vernieuwd elke 15 minuten.</p>
   </div>
 </header>
 
@@ -796,13 +798,15 @@ function render() {
     filtered.map(x => category(x.title + x.description))
   ).size;
 
-  let level = 'Normaal', meter = 30;
-  if (highCount > 3) { level = 'Verhoogd'; meter = 60; }
-  if (highCount > 6) { level = 'Hoog'; meter = 85; }
+  let level = 'Normaal', meter = 30, meterColor = 'var(--low)';
+  if (highCount > 3) { level = 'Verhoogd'; meter = 60; meterColor = 'var(--medium)'; }
+  if (highCount > 6) { level = 'Hoog'; meter = 85; meterColor = 'var(--high)'; }
 
   document.getElementById('threatLabel').textContent = level;
   document.getElementById('threatText').textContent = level;
-  document.getElementById('meterFill').style.width = meter + '%';
+  const meterFill = document.getElementById('meterFill');
+  meterFill.style.width = meter + '%';
+  meterFill.style.background = meterColor;
 
   document.getElementById('topThreats').innerHTML = filtered.length
     ? filtered.slice(0, 5).map(x => `<li>${esc(x.title)}</li>`).join('')
@@ -831,7 +835,7 @@ function render() {
           <span class="cat-tag">${CAT_LABELS[cat]}</span>
         </div>
         <p class="alert-excerpt">${esc(excerpt(item.description, 180))}</p>
-        <div class="action-box">
+        <div class="action-box action-box--${r}">
           <strong>Wat moet ik doen?</strong>
           ${advice(r)}
         </div>
