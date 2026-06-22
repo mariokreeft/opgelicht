@@ -1552,7 +1552,7 @@ function excerpt(html, max) {
 function parseJinaFeed(markdown) {
   const lines = (markdown || '').split('\n').map(line => line.trim());
   const items = [];
-  const dateRe = /^[A-Z][a-z]{2}, \d{2} [A-Z][a-z]{3} \d{4} \d{2}:\d{2}:\d{2} \+0000$/;
+  const dateRe = /^[A-Z][a-z]{2}, \d{2} [A-Z][a-z]{2} \d{4} \d{2}:\d{2}:\d{2} [+-]\d{4}$/;
 
   for (let i = 0; i < lines.length; i++) {
     const line = lines[i];
