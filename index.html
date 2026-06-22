@@ -1325,7 +1325,8 @@ main { padding: 26px 0 38px; }
 </footer>
 
 <script>
-const FEED_URL = 'https://api.rss2json.com/v1/api.json?rss_url=' +
+const FEED_MARKDOWN_URL = 'https://r.jina.ai/http://www.fraudehelpdesk.nl/feed/?post_type=alert';
+const FEED_FALLBACK_URL = 'https://api.rss2json.com/v1/api.json?rss_url=' +
   encodeURIComponent('https://www.fraudehelpdesk.nl/feed/?post_type=alert');
 
 const CAT_LABELS = {
@@ -1548,20 +1549,68 @@ function excerpt(html, max) {
   return plain.substring(0, max).trimEnd() + '…';
 }
 
+function parseJinaFeed(markdown) {
+  const lines = (markdown || '').split('\n').map(line => line.trim());
+  const items = [];
+  const dateRe = /^[A-Z][a-z]{2}, \d{2} [A-Z][a-z]{3} \d{4} \d{2}:\d{2}:\d{2} \+0000$/;
+
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+    if (!line.startsWith('### [')) continue;
+    const titleMatch = line.match(/^### \[(.+?)\]\((https?:\/\/[^\s)]+)\)$/);
+    if (!titleMatch) continue;
+
+    const title = titleMatch[1];
+    const link = titleMatch[2];
+    let pubDate = '';
+
+    for (let j = i + 1; j < Math.min(i + 8, lines.length); j++) {
+      if (dateRe.test(lines[j])) {
+        pubDate = lines[j];
+        break;
+      }
+    }
+
+    if (pubDate) {
+      items.push({
+        title,
+        link,
+        pubDate,
+        description: title
+      });
+    }
+  }
+
+  return items;
+}
+
 async function loadFeed() {
   setStatus('loading', 'Feed laden…');
   try {
-    const response = await fetch(FEED_URL);
-    const data = await response.json();
-    alerts = data.items || [];
+    const primaryResponse = await fetch(FEED_MARKDOWN_URL, { cache: 'no-store' });
+    const markdown = await primaryResponse.text();
+    const primaryItems = parseJinaFeed(markdown);
+    if (!primaryItems.length) throw new Error('Lege primaire feed');
+    alerts = primaryItems;
     setStatus('online', 'Feed actief');
     document.getElementById('updated').textContent =
       'Laatste update: ' + new Date().toLocaleString('nl-NL', { dateStyle: 'short', timeStyle: 'short' });
     render();
   } catch {
-    setStatus('offline', 'Feed niet bereikbaar');
-    document.getElementById('feed').innerHTML =
-      '<div class="empty-state"><strong>Feed kon niet worden geladen</strong>Probeer de pagina later opnieuw te laden.</div>';
+    try {
+      const fallbackResponse = await fetch(FEED_FALLBACK_URL + '&_=' + Date.now(), { cache: 'no-store' });
+      const fallbackData = await fallbackResponse.json();
+      alerts = fallbackData.items || [];
+      if (!alerts.length) throw new Error('Lege fallback feed');
+      setStatus('online', 'Feed actief');
+      document.getElementById('updated').textContent =
+        'Laatste update: ' + new Date().toLocaleString('nl-NL', { dateStyle: 'short', timeStyle: 'short' });
+      render();
+    } catch {
+      setStatus('offline', 'Feed niet bereikbaar');
+      document.getElementById('feed').innerHTML =
+        '<div class="empty-state"><strong>Feed kon niet worden geladen</strong>Probeer de pagina later opnieuw te laden.</div>';
+    }
   }
 }
 
